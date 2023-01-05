@@ -309,84 +309,98 @@ function addComment() {
     }
 
 
-    // function getCommentObject(id) {
-    //     return posts.find(item => item.id === id);
-    // };
 
-    function deleteComment() {
-        if(!inSystem){
-            alert('Only authorized users can delete comments!')
-            return; 
-        };
-        let commentId = prompt('Enter comment id');
-        if(!checkCommentKey(commentObj)) {
-            alert('There is no comment with this id or you are not the author of such a comment')
-        return;
-    }
-    postObj.comments = postsObj.commments.filter(item => item.id !== commentId);
-    readPosts()
-    return posts
-    }   
-    
-
-    // function deleteComment () {
-
-    //     if (!inSystem) {
-    //       alert("Only authorized users can delete comment");
-    //       return;
-    //     }
-    
-    //     let postId = +prompt("Enter postID:");
-    
-    //     let commentId = prompt("Enter commentID:");
-    
-    //     let postObj = getPostObj(postId)
-        
-    //     if (!postObj) {
-    //         return alert("Post is not found");
-    //     }
-        
-    //     let commentObj = getCommentObject(postId, commentId);
-    
-    //     console.log(commentObj)
-    
-    //     console.log(checkOwnerComment(postId, commentId))
-    
-    //     if(!checkOwnerComment(postId, commentId)) {
-    //         alert ('There is no this post or you are not the author of this comment!');
-    //         return;
-    //     }
-    
-    //     postObj.comments = postObj.comments.filter(item => item.id !== commentId);
-    
-    //     console.log(posts)
-    //     return postObj.comments
-    
+    // function deleteComment() {
+    //     if(!inSystem){
+    //         alert('Only authorized users can delete comments!')
+    //         return; 
+    //     };
+    //     let commentId = prompt('Enter comment id');
+    //     if(!checkCommentKey(commentObj)) {
+    //         alert('There is no comment with this id or you are not the author of such a comment')
+    //     return;
     // }
-//comments scripts end
+    // postObj.comments = postsObj.commments.filter(item => item.id !== commentId);
+    // readPosts()
+    // console.log(posts);
+    // return posts
+    // }   
+    
 
-// likes scripts start
+ 
+function getCommentObject (id, commid) {
+    let postObj = getPostObj(id);
+    return postObj.comments.find(item => item.id === commid); //вернет объект, если нет, то undefined
+};
 
+function checkOwnerComment (id, commid) {
+    let commObj = getCommentObject(id, commid)
+    return commObj.user === inSystem //true true 
+}
 
-let flagLike = false;
-let flagDisl = false;
+function deleteComment() {
+    if (!inSystem) {
+        alert("Only authorized users can delete comment");
+        return;
+      }
+  
+      let postId = +prompt("Enter postID:");
+  
+      let commentId = prompt("Enter commentID:");
+  
+      let postObj = getPostObj(postId)
+  
+      if (!postObj) {
+          return alert("Post is not found");
+      }
+  
+      let commentObj = getCommentObject(postId, commentId);
+  
+      // console.log(commentObj)
+  
+      // console.log(checkOwnerComment(postId, commentId))
+  
+      if(!checkOwnerComment(postId, commentId)) {
+          alert ('There is no this post or you are not the author of this comment!');
+          return;
+      }
+  
+      postObj.comments = postObj.comments.filter(item => item.id !== commentId);
+  
+      console.log(posts)
+};
+// comments scripts end
+
+// add likes
+
 function addLike() {
+    if (!inSystem) {
+        alert('Only authorized users can likes post!');
+        return;
+    };
     let likeId = +prompt('Enter post ID to like');
     let postLike = posts.find(item => item.id === likeId);
     
-    if (postLike && flagLike === false ) {
-        postLike.likes += 1;
-        postLike.nameLikes = inSystem;
-        flagLike = true;
-    } else if (postLike && flagLike === true ) {
+    //dislike
+    if(postLike.nameLikes?.includes(inSystem)){
+        postLike.nameLikes.splice(postLike.nameLikes.indexOf(inSystem), 1);
         postLike.likes -= 1;
-        flagDisl = true;
-        flagLike = false
+        readPosts();
+        return;
     }
+
+    if(postLike){
+        postLike.likes += 1;
+        postLike.nameLikes ? postLike.nameLikes.push(inSystem) : postLike.nameLikes = [inSystem];
+    }
+
     console.log(posts);
     readPosts();
     return;
 };
+
+// add likes end
+
 
 
 // likes scripts end
